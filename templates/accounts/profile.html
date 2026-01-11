@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Bangladesh Railway{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 700px; margin: 2rem auto;">
+        <div class="search-card">
+            <h2 style="color: #D97B3A; margin-bottom: 2rem;">My Profile</h2>
+
+            <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <p style="color: #666; margin-bottom: 0.25rem;">Username</p>
+                        <p style="font-weight: bold;">{{ user.username }}</p>
+                    </div>
+
+                    <div>
+                        <p style="color: #666; margin-bottom: 0.25rem;">Email</p>
+                        <p style="font-weight: bold;">{{ user.email }}</p>
+                    </div>
+
+                    <div>
+                        <p style="color: #666; margin-bottom: 0.25rem;">Phone Number</p>
+                        <p style="font-weight: bold;">{{ user.phone_number|default:"Not provided" }}</p>
+                    </div>
+
+                    <div>
+                        <p style="color: #666; margin-bottom: 0.25rem;">Role</p>
+                        <p style="font-weight: bold;">{{ user.get_role_display }}</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <p style="color: #666; margin-bottom: 0.25rem;">Address</p>
+                    <p style="font-weight: bold;">{{ user.address|default:"Not provided" }}</p>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <p style="color: #666; margin-bottom: 0.25rem;">Member Since</p>
+                    <p style="font-weight: bold;">{{ user.date_joined|date:"d M, Y" }}</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary"
+                    style="flex: 1; text-align: center; text-decoration: none;">Edit Profile</a>
+                <a href="{% url 'accounts:change_password' %}" class="btn btn-outline"
+                    style="flex: 1; text-align: center; text-decoration: none;">Change Password</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

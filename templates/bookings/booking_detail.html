@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - {{ booking.pnr }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 800px; margin: 2rem auto;">
+
+        <!-- Status Banner -->
+        <!-- Status Banner -->
+        {% if booking.status == 'booked' %}
+        <div style="text-align: center; padding: 2rem; background: #d4edda; border-radius: 10px; margin-bottom: 2rem;">
+            <h2 style="color: #155724; margin: 0;">✓ Booking Confirmed</h2>
+            {% elif booking.status == 'cancelled' %}
+            <div
+                style="text-align: center; padding: 2rem; background: #f8d7da; border-radius: 10px; margin-bottom: 2rem;">
+                <h2 style="color: #721c24; margin: 0;">✗ Booking Cancelled</h2>
+                {% else %}
+                <div
+                    style="text-align: center; padding: 2rem; background: #d1ecf1; border-radius: 10px; margin-bottom: 2rem;">
+                    <h2 style="color: #0c5460; margin: 0;">✓ Journey Completed</h2>
+                    {% endif %}
+                    <p style="font-size: 1.25rem; margin: 0.5rem 0 0 0;">PNR: <strong>{{ booking.pnr }}</strong></p>
+                </div>
+
+                <!-- Train Details -->
+                <div class="search-card" style="margin-bottom: 2rem;">
+                    <h3 style="color: #D97B3A; margin-bottom: 1.5rem;">Train Details</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.25rem;">Train Name</p>
+                            <p style="font-weight: bold;">{{ booking.train.train_name }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.25rem;">Train Number</p>
+                            <p style="font-weight: bold;">{{ booking.train.train_number }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.25rem;">From</p>
+                            <p style="font-weight: bold;">{{ booking.origin_station.station_name }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.25rem;">To</p>
+                            <p style="font-weight: bold;">{{ booking.destination_station.station_name }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.25rem;">Journey Date</p>
+                            <p style="font-weight: bold;">{{ booking.journey_date|date:"d M, Y (l)" }}</p>
+                        </div>
+                        <div>
+                            <p style="color: #666; margin-bottom: 0.25rem;">Booking Date</p>
+                            <p style="font-weight: bold;">{{ booking.booking_date|date:"d M, Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passenger Details -->
+                <div class="search-card" style="margin-bottom: 2rem;">
+                    <h3 style="color: #D97B3A; margin-bottom: 1.5rem;">Passenger Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f9f9f9;">
+                                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #E0E0E0;">#</th>
+                                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #E0E0E0;">Name
+                                </th>
+                                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #E0E0E0;">Age
+                                </th>
+                                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #E0E0E0;">Gender
+                                </th>
+                                <th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid #E0E0E0;">Seat
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for passenger in passengers %}
+                            <tr>
+                                <td style="padding: 0.75rem; border-bottom: 1px solid #E0E0E0;">{{ forloop.counter }}
+                                </td>
+                                <td style="padding: 0.75rem; border-bottom: 1px solid #E0E0E0;">{{ passenger.name }}
+                                </td>
+                                <td style="padding: 0.75rem; border-bottom: 1px solid #E0E0E0;">{{ passenger.age }}</td>
+                                <td style="padding: 0.75rem; border-bottom: 1px solid #E0E0E0;">{{ passenger.gender }}
+                                </td>
+                                <td style="padding: 0.75rem; border-bottom: 1px solid #E0E0E0;">{{
+                                    passenger.seat_number|default:"Not Assigned" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Fare Details -->
+                <div class="search-card" style="margin-bottom: 2rem;">
+                    <h3 style="color: #D97B3A; margin-bottom: 1.5rem;">Fare Details</h3>
+                    <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Base Fare:</span>
+                            <span>৳{{ booking.base_fare }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Reservation Charge:</span>
+                            <span>৳{{ booking.reservation_charge }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Tax:</span>
+                            <span>৳{{ booking.tax }}</span>
+                        </div>
+                        <hr style="margin: 1rem 0;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold;">
+                            <span>Total Fare:</span>
+                            <span style="color: #D97B3A;">৳{{ booking.total_fare }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Status -->
+                {% if booking.payment %}
+                <div class="search-card" style="margin-bottom: 2rem; background: #d4edda; border: 1px solid #c3e6cb;">
+                    <h4 style="color: #155724; margin-bottom: 1rem;">✓ Payment Completed</h4>
+                    <p><strong>Transaction ID:</strong> {{ booking.payment.transaction_id }}</p>
+                    <p><strong>Payment Method:</strong> {{ booking.payment.get_payment_method_display }}</p>
+                    <p><strong>Payment Date:</strong> {{ booking.payment.payment_date|date:"d M, Y H:i" }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Cancellation Info -->
+                {% if booking.cancellation %}
+                <div class="search-card" style="margin-bottom: 2rem; background: #f8d7da; border: 1px solid #f5c6cb;">
+                    <h4 style="color: #721c24; margin-bottom: 1rem;">Cancellation Details</h4>
+                    <p><strong>Cancelled On:</strong> {{ booking.cancellation.cancellation_date|date:"d M, Y H:i" }}</p>
+                    <p><strong>Refund Amount:</strong> ৳{{ booking.cancellation.refund_amount }}</p>
+                    <p><strong>Refund Status:</strong> {{ booking.cancellation.get_refund_status_display }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    {% if booking.status == 'booked' and booking.payment %}
+                    <a href="{% url 'bookings:download_ticket' booking.pnr %}" class="btn btn-success">Download
+                        Ticket</a>
+                    <a href="{% url 'bookings:cancel_booking' booking.id %}" class="btn btn-outline">Cancel Booking</a>
+                    {% elif booking.status == 'booked' and not booking.payment %}
+                    <a href="{% url 'bookings:payment' booking.id %}" class="btn btn-success">Complete Payment</a>
+                    {% endif %}
+                    <a href="{% url 'bookings:my_bookings' %}" class="btn btn-outline">Back to My Bookings</a>
+                </div>
+            </div>
+        </div>
+        {% endblock %}

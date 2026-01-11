@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Bangladesh Railway{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 600px; margin: 2rem auto;">
+        <!-- Booking Summary -->
+        <div class="search-card" style="margin-bottom: 2rem;">
+            <h3 style="color: #D97B3A;">Booking Summary</h3>
+            <div style="background: #f9f9f9; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <p><strong>PNR:</strong> {{ booking.pnr }}</p>
+                <p><strong>Train:</strong> {{ booking.train.train_name }}</p>
+                <p><strong>Route:</strong> {{ booking.origin_station.station_name }} → {{
+                    booking.destination_station.station_name }}</p>
+                <p><strong>Journey Date:</strong> {{ booking.journey_date|date:"d M, Y" }}</p>
+                <p><strong>Passengers:</strong> {{ passengers.count }}</p>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="search-card">
+            <h2 style="color: #D97B3A; margin-bottom: 2rem;">Payment Gateway</h2>
+
+            <div
+                style="background: #fff3cd; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #ffeaa7;">
+                <p style="margin: 0; color: #856404;">
+                    <strong>⚠️ Simulated Payment:</strong> This is a demo payment gateway. No real transaction will
+                    occur.
+                </p>
+            </div>
+
+            <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Base Fare:</span>
+                    <span>৳{{ booking.base_fare }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Reservation Charge:</span>
+                    <span>৳{{ booking.reservation_charge }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Tax:</span>
+                    <span>৳{{ booking.tax }}</span>
+                </div>
+                <hr style="margin: 1rem 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold;">
+                    <span>Total Amount:</span>
+                    <span style="color: #D97B3A;">৳{{ booking.total_fare }}</span>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'bookings:payment' booking.id %}" id="paymentForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Select Payment Method</label>
+                    <select name="payment_method" required>
+                        <option value="">Choose payment method</option>
+                        <option value="bkash">bKash</option>
+                        <option value="nagad">Nagad</option>
+                        <option value="card">Credit/Debit Card</option>
+                        <option value="cash">Cash (Counter)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success" id="payButton" style="width: 100%;">
+                    Pay ৳{{ booking.total_fare }}
+                </button>
+            </form>
+
+            <div id="processingMessage" style="display: none; text-align: center; padding: 2rem;">
+                <div
+                    style="border: 4px solid #f3f3f3; border-top: 4px solid #2D7A5C; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto;">
+                </div>
+                <p style="margin-top: 1rem; color: #2D7A5C; font-weight: bold;">Processing payment...</p>
+                <p style="color: #666; font-size: 0.9rem;">Please wait 5 seconds</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script>
+    document.getElementById('paymentForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Hide form, show processing
+        document.getElementById('paymentForm').style.display = 'none';
+        document.getElementById('processingMessage').style.display = 'block';
+
+        // Simulate 5 second payment processing
+        setTimeout(() => {
+            this.submit();
+        }, 5000);
+    });
+</script>
+{% endblock %}

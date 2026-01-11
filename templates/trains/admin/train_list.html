@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Trains{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+        <h2 style="color: #D97B3A;">Manage Trains</h2>
+        <div>
+            <a href="{% url 'trains:admin_train_add' %}" class="btn btn-success">+ Add New Train</a>
+            <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-outline">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <table style="width: 100%;">
+            <thead>
+                <tr style="border-bottom: 2px solid #E0E0E0;">
+                    <th style="padding: 0.75rem; text-align: left;">Train Number</th>
+                    <th style="padding: 0.75rem; text-align: left;">Train Name</th>
+                    <th style="padding: 0.75rem; text-align: left;">Seats</th>
+                    <th style="padding: 0.75rem; text-align: left;">Classes</th>
+                    <th style="padding: 0.75rem; text-align: left;">Off Day</th>
+                    <th style="padding: 0.75rem; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for train in trains %}
+                <tr style="border-bottom: 1px solid #E0E0E0;">
+                    <td style="padding: 0.75rem;">{{ train.train_number }}</td>
+                    <td style="padding: 0.75rem;">{{ train.train_name }}</td>
+                    <td style="padding: 0.75rem;">{{ train.available_seats }}/{{ train.total_seats }}</td>
+                    <td style="padding: 0.75rem;">{{ train.classes_available }}</td>
+                    <td style="padding: 0.75rem;">{{ train.off_day|default:"None" }}</td>
+                    <td style="padding: 0.75rem; text-align: center;">
+                        <a href="{% url 'trains:admin_train_edit' train.id %}" class="btn btn-outline"
+                            style="padding: 0.5rem 1rem; margin-right: 0.5rem;">Edit</a>
+                        <a href="{% url 'trains:admin_train_delete' train.id %}" class="btn btn-outline"
+                            style="padding: 0.5rem 1rem; background: #dc3545; color: white; border-color: #dc3545;"
+                            onclick="return confirm('Delete this train?')">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: #666;">No trains found. Add your
+                        first train!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Schedules{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 2rem 0;">
+        <h2 style="color: #D97B3A;">Manage Train Schedules</h2>
+        <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-outline">← Back to Dashboard</a>
+    </div>
+
+    <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <table style="width: 100%;">
+            <thead>
+                <tr style="border-bottom: 2px solid #E0E0E0;">
+                    <th style="padding: 0.75rem; text-align: left;">Train</th>
+                    <th style="padding: 0.75rem; text-align: left;">Departure Time</th>
+                    <th style="padding: 0.75rem; text-align: left;">Arrival Time</th>
+                    <th style="padding: 0.75rem; text-align: left;">Off Days</th>
+                    <th style="padding: 0.75rem; text-align: left;">Status</th>
+                    <th style="padding: 0.75rem; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                <tr style="border-bottom: 1px solid #E0E0E0;">
+                    <td style="padding: 0.75rem;">{{ schedule.train.train_name }}</td>
+                    <td style="padding: 0.75rem;">{{ schedule.departure_time }}</td>
+                    <td style="padding: 0.75rem;">{{ schedule.arrival_time }}</td>
+                    <td style="padding: 0.75rem;">{{ schedule.off_days|default:"None" }}</td>
+                    <td style="padding: 0.75rem;">{{ schedule.status|title }}</td>
+                    <td style="padding: 0.75rem; text-align: center;">
+                        <a href="{% url 'trains:admin_schedule_edit' schedule.id %}" class="btn btn-primary"
+                            style="padding: 0.5rem 1rem;">Edit</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: #666;">
+                        <p>No schedules found. Train schedules are created automatically when you add trains via System
+                            Admin.</p>
+                        <p style="margin-top: 0.5rem;"><a href="{% url 'admin:trains_trainschedule_add' %}"
+                                target="_blank">Create Schedule in System Admin →</a></p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Bangladesh Railway{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 500px; margin: 3rem auto;">
+        <div class="search-card">
+            <h2 style="text-align: center; color: #D97B3A; margin-bottom: 2rem;">Login</h2>
+
+            <form method="POST" action="{% url 'accounts:login' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">LOGIN</button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <p style="color: #666;">Don't have an account?
+                    <a href="{% url 'accounts:register' %}"
+                        style="color: #D97B3A; text-decoration: none; font-weight: bold;">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

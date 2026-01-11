@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bangladesh Railway - Online Ticket Booking{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'trains:home' %}" class="navbar-brand">
+                <div class="navbar-logo">🚂</div>
+                <div>
+                    <div class="navbar-title">Bangladesh</div>
+                    <div class="navbar-title">Railway</div>
+                </div>
+            </a>
+
+            <ul class="navbar-menu">
+                <li><a href="{% url 'trains:home' %}"
+                        class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'bookings:my_bookings' %}">My Bookings</a></li>
+                <li><a href="{% url 'accounts:profile' %}">{{ user.username }}</a></li>
+                <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+                {% else %}
+                <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                {% endif %}
+
+                <li><a href="#">Train Information</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container" style="margin-top: 1rem;">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer style="background: #333; color: white; text-align: center; padding: 2rem; margin-top: 3rem;">
+        <p>&copy; 2025 Bangladesh Railway. All rights reserved.</p>
+    </footer>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+
+</html>

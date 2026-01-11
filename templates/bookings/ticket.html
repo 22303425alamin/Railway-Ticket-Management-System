@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Ticket - {{ booking.pnr }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+
+        .ticket {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid #D97B3A;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .ticket-header {
+            background: linear-gradient(135deg, #D97B3A, #e69055);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .ticket-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-body {
+            padding: 2rem;
+        }
+
+        .pnr-section {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .pnr-section .pnr {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #D97B3A;
+            letter-spacing: 3px;
+        }
+
+        .ticket-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-box {
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .info-box label {
+            display: block;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-box .value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .passengers-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .passengers-table th,
+        .passengers-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .passengers-table th {
+            background: #f9f9f9;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .ticket-footer {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 2px dashed #D97B3A;
+        }
+
+        .no-print {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ticket">
+        <!-- Header -->
+        <div class="ticket-header">
+            <h1>🚂 Bangladesh Railway</h1>
+            <p style="font-size: 1.25rem;">Electronic Train Ticket</p>
+        </div>
+
+        <!-- Body -->
+        <div class="ticket-body">
+            <!-- PNR -->
+            <div class="pnr-section">
+                <p style="color: #666; margin-bottom: 0.5rem;">PNR Number</p>
+                <div class="pnr">{{ booking.pnr }}</div>
+            </div>
+
+            <!-- Train & Journey Info -->
+            <div class="ticket-info">
+                <div class="info-box">
+                    <label>Train Name</label>
+                    <div class="value">{{ booking.train.train_name }}</div>
+                </div>
+                <div class="info-box">
+                    <label>Train Number</label>
+                    <div class="value">{{ booking.train.train_number }}</div>
+                </div>
+                <div class="info-box">
+                    <label>From Station</label>
+                    <div class="value">{{ booking.origin_station.station_name }}</div>
+                </div>
+                <div class="info-box">
+                    <label>To Station</label>
+                    <div class="value">{{ booking.destination_station.station_name }}</div>
+                </div>
+                <div class="info-box">
+                    <label>Journey Date</label>
+                    <div class="value">{{ booking.journey_date|date:"d M, Y (l)" }}</div>
+                </div>
+                <div class="info-box">
+                    <label>Booking Date</label>
+                    <div class="value">{{ booking.booking_date|date:"d M, Y H:i" }}</div>
+                </div>
+            </div>
+
+            <!-- Passenger Details -->
+            <h3 style="color: #D97B3A; margin-bottom: 1rem;">Passenger Details</h3>
+            <table class="passengers-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Passenger Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Seat No.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for passenger in passengers %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ passenger.name }}</td>
+                        <td>{{ passenger.age }}</td>
+                        <td>{{ passenger.gender }}</td>
+                        <td>{{ passenger.seat_number|default:"N/A" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Fare Details -->
+            <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px;">
+                <h4 style="color: #D97B3A; margin-bottom: 1rem;">Fare Breakup</h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Base Fare:</span>
+                    <span>৳{{ booking.base_fare }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Reservation Charge:</span>
+                    <span>৳{{ booking.reservation_charge }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Tax:</span>
+                    <span>৳{{ booking.tax }}</span>
+                </div>
+                <hr style="margin: 1rem 0; border: none; border-top: 2px solid #E0E0E0;">
+                <div style="display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: bold;">
+                    <span>Total Paid:</span>
+                    <span style="color: #D97B3A;">৳{{ booking.total_fare }}</span>
+                </div>
+            </div>
+
+            <!-- Payment Info -->
+            {% if booking.payment %}
+            <div
+                style="margin-top: 2rem; padding: 1rem; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb;">
+                <p style="color: #155724; margin-bottom: 0.5rem;"><strong>✓ Payment Completed</strong></p>
+                <p style="color: #155724; font-size: 0.9rem;">Transaction ID: {{ booking.payment.transaction_id }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="ticket-footer">
+            <p><strong>Important Instructions:</strong></p>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                Please carry a valid ID proof along with this ticket. This is a computer-generated ticket and does not
+                require signature.
+            </p>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                For any queries, contact: <strong>16XXX</strong> | Email: <strong>support@railway.gov.bd</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <div class="no-print">
+        <button onclick="window.print()"
+            style="padding: 1rem 3rem; background: #2D7A5C; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-top: 2rem;">
+            🖨️ Print Ticket
+        </button>
+        <a href="{% url 'bookings:booking_detail' booking.pnr %}"
+            style="display: inline-block; padding: 1rem 3rem; background: #D97B3A; color: white; text-decoration: none; border-radius: 8px; font-size: 1.1rem; margin-top: 2rem; margin-left: 1rem;">
+            ← Back to Booking
+        </a>
+    </div>
+</body>
+
+</html>

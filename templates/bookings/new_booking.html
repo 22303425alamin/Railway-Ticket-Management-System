@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Ticket - Bangladesh Railway{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 800px; margin: 2rem auto;">
+        <!-- Train Info Card -->
+        <div class="search-card" style="margin-bottom: 2rem;">
+            <h3 style="color: #D97B3A;">{{ train.train_name }} ({{ train.train_number }})</h3>
+            <div
+                style="display: flex; justify-content: space-between; margin-top: 1rem; padding: 1rem; background: #f9f9f9; border-radius: 8px;">
+                <div>
+                    <p style="color: #666;">From</p>
+                    <p style="font-weight: bold;">{{ origin.station_name }}</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="color: #666;">→</p>
+                </div>
+                <div>
+                    <p style="color: #666;">To</p>
+                    <p style="font-weight: bold;">{{ destination.station_name }}</p>
+                </div>
+                <div>
+                    <p style="color: #666;">Journey Date</p>
+                    <p style="font-weight: bold;">{{ journey_date|date:"d M, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passenger Form -->
+        <div class="search-card">
+            <h2 style="color: #D97B3A; margin-bottom: 2rem;">Passenger Details</h2>
+
+            <form method="POST" action="{% url 'bookings:confirm_booking' %}" id="bookingForm">
+                {% csrf_token %}
+                <input type="hidden" name="train_id" value="{{ train.id }}">
+                <input type="hidden" name="origin_code" value="{{ origin.station_code }}">
+                <input type="hidden" name="destination_code" value="{{ destination.station_code }}">
+                <input type="hidden" name="journey_date" value="{{ journey_date|date:'Y-m-d' }}">
+
+                <div id="passengerContainer">
+                    <!-- Passenger 1 -->
+                    <div class="passenger-item"
+                        style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="margin-bottom: 1rem;">Passenger 1</h4>
+
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" name="passenger_name[]" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Age *</label>
+                                <input type="number" name="passenger_age[]" min="1" max="120" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Gender *</label>
+                                <select name="passenger_gender[]" required>
+                                    <option value="">Select</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <button type="button" class="btn btn-outline" onclick="addPassenger()">+ Add Another
+                        Passenger</button>
+                </div>
+
+                <!-- Fare Summary -->
+                <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin: 2rem 0;">
+                    <h4 style="margin-bottom: 1rem;">Fare Summary</h4>
+
+                    <div style="background: #e8f5e9; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+                        <p style="color: #2D7A5C; margin-bottom: 0.5rem;">
+                            <strong>Distance:</strong> {{ distance }} km
+                        </p>
+                        <p style="color: #2D7A5C;">
+                            <strong>Rate:</strong> ৳2 per km per passenger
+                        </p>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Base Fare ({{ distance }} km × ৳2 × <span id="passengerCount">1</span> passenger):</span>
+                        <span id="baseFare">৳{{ fare_per_passenger }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Reservation Charge:</span>
+                        <span>৳50</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Tax (5%):</span>
+                        <span id="taxAmount">৳{{ tax_amount }}</span>
+                    </div>
+                    <hr style="margin: 1rem 0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: bold;">
+                        <span>Total Fare:</span>
+                        <span id="totalFare" style="color: #D97B3A;">৳{{ total_fare }}</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Proceed to Payment</button>
+                    <a href="{% url 'trains:home' %}" class="btn btn-outline"
+                        style="flex: 1; text-align: center; text-decoration: none;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let passengerCount = 1;
+    const distanceKm = {{ distance }};
+    const farePerKm = 2;
+
+    function addPassenger() {
+        passengerCount++;
+        const container = document.getElementById('passengerContainer');
+
+        const passengerHTML = `
+        <div class="passenger-item" style="background: #f9f9f9; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h4>Passenger ${passengerCount}</h4>
+                <button type="button" class="btn-outline" style="padding: 0.5rem 1rem;" onclick="removePassenger(this)">Remove</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="passenger_name[]" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Age *</label>
+                    <input type="number" name="passenger_age[]" min="1" max="120" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender *</label>
+                    <select name="passenger_gender[]" required>
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    `;
+
+        container.insertAdjacentHTML('beforeend', passengerHTML);
+        updateFare();
+    }
+
+    function removePassenger(button) {
+        button.closest('.passenger-item').remove();
+        passengerCount--;
+        updateFare();
+    }
+
+    function updateFare() {
+        const baseFare = passengerCount * distanceKm * farePerKm;
+        const reservationCharge = 50;
+        const tax = (baseFare + reservationCharge) * 0.05;
+        const total = baseFare + reservationCharge + tax;
+
+        document.getElementById('passengerCount').textContent = passengerCount;
+        document.getElementById('baseFare').textContent = '৳' + baseFare;
+        document.getElementById('taxAmount').textContent = '৳' + tax.toFixed(2);
+        document.getElementById('totalFare').textContent = '৳' + total.toFixed(2);
+    }
+</script>
+{% endblock %}

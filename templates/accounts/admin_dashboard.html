@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 style="color: #D97B3A; margin: 2rem 0;">Admin Dashboard</h2>
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+        <div
+            style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="color: #2D7A5C;">{{ total_trains }}</h3>
+            <p>Total Trains</p>
+        </div>
+        <div
+            style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="color: #2D7A5C;">{{ total_stations }}</h3>
+            <p>Total Stations</p>
+        </div>
+        <div
+            style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="color: #2D7A5C;">{{ total_routes }}</h3>
+            <p>Total Routes</p>
+        </div>
+        <div
+            style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="color: #2D7A5C;">{{ total_bookings }}</h3>
+            <p>Total Bookings</p>
+        </div>
+    </div>
+
+    <!-- Management Options -->
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2rem;">
+
+        <!-- Train Management -->
+        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #D97B3A; margin-bottom: 1rem;">🚂 Train Management</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Add, edit, or remove trains from the system.</p>
+            <a href="{% url 'trains:admin_train_list' %}" class="btn btn-primary"
+                style="display: block; text-align: center; text-decoration: none;">Manage Trains</a>
+        </div>
+
+        <!-- Route Management -->
+        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #D97B3A; margin-bottom: 1rem;">🛤️ Route Management</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Configure train routes and stations.</p>
+            <a href="{% url 'trains:admin_route_list' %}" class="btn btn-primary"
+                style="display: block; text-align: center; text-decoration: none;">Manage Routes</a>
+        </div>
+
+        <!-- Schedule Management -->
+        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #D97B3A; margin-bottom: 1rem;">📅 Schedule Management</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Update train timings and off-days.</p>
+            <a href="{% url 'trains:admin_schedule_list' %}" class="btn btn-primary"
+                style="display: block; text-align: center; text-decoration: none;">Manage Schedules</a>
+        </div>
+
+        <!-- System Admin -->
+        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #D97B3A; margin-bottom: 1rem;">⚙️ System Admin</h3>
+            <p style="color: #666; margin-bottom: 1rem;">Advanced: Django admin panel (stations, users, debug).</p>
+            <a href="{% url 'admin:index' %}" class="btn btn-outline"
+                style="display: block; text-align: center; text-decoration: none;" target="_blank">Open System Admin</a>
+        </div>
+    </div>
+
+    <!-- Recent Trains -->
+    <div style="margin-top: 3rem;">
+        <h3 style="color: #D97B3A; margin-bottom: 1rem;">Recent Trains</h3>
+        <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <table style="width: 100%;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #E0E0E0;">
+                        <th style="padding: 0.75rem; text-align: left;">Train Number</th>
+                        <th style="padding: 0.75rem; text-align: left;">Train Name</th>
+                        <th style="padding: 0.75rem; text-align: left;">Available Seats</th>
+                        <th style="padding: 0.75rem; text-align: left;">Off Day</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for train in recent_trains %}
+                    <tr style="border-bottom: 1px solid #E0E0E0;">
+                        <td style="padding: 0.75rem;">{{ train.train_number }}</td>
+                        <td style="padding: 0.75rem;">{{ train.train_name }}</td>
+                        <td style="padding: 0.75rem;">{{ train.available_seats }}/{{ train.total_seats }}</td>
+                        <td style="padding: 0.75rem;">{{ train.off_day|default:"None" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Bangladesh Railway{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero-section">
+        <!-- Search Form -->
+        <div class="search-card">
+            <h2>Search Trains</h2>
+            <form method="POST" action="{% url 'trains:search' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="origin">From Station</label>
+                    <select name="origin" id="origin" required>
+                        <option value="">Select Origin</option>
+                        {% for station in stations %}
+                        <option value="{{ station.station_code }}">{{ station.station_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="destination">To Station</label>
+                    <select name="destination" id="destination" required>
+                        <option value="">Select Destination</option>
+                        {% for station in stations %}
+                        <option value="{{ station.station_code }}">{{ station.station_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="journey_date">Date of Journey</label>
+                    <input type="date" name="journey_date" id="journey_date" required min="{{ today|date:'Y-m-d' }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">SEARCH TRAINS</button>
+            </form>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="hero-image">
+            <img src="https://play-lh.googleusercontent.com/MckUhHJQoAEGjagHkZjFjcgG62tj1K04dWy_KewZ6EoYc12DbTM7Qz3gHAPJNxJxIRwQ"
+                alt="Train Banner" width="100%" height="400" style="object-fit: cover;">
+
+            <div class="payment-methods">
+                <p><strong>Easy purchase of tickets using online payment method</strong></p>
+                <div class="payment-icons">
+                    <span style="color: #D97B3A; font-weight: bold; font-size: 1.2rem;">💳 bKash</span>
+                    <span style="color: #D97B3A; font-weight: bold; font-size: 1.2rem;">💳 Nagad</span>
+                    <span style="color: #D97B3A; font-weight: bold; font-size: 1.2rem;">💳 Visa</span>
+                    <span style="color: #D97B3A; font-weight: bold; font-size: 1.2rem;">💳 Mastercard</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set minimum date to today
+    document.getElementById('journey_date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}
