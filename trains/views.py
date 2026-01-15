@@ -2,17 +2,29 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Train, Station, Route, TrainSchedule
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 
 def home(request):
     """Home Page - Search Form"""
-    # Get unique sources and destinations from routes
     stations = Station.objects.all().order_by('station_name')
+    today = date.today()
+    max_date = today + timedelta(days=10)
     
-    return render(request, 'trains/home.html', {
-        'stations': stations
-    })
+    context = {
+        'stations': stations,
+        'today': today,
+        'max_date': max_date,
+    }
+    
+    # Pre-fill for modify search
+    if request.GET.get('modify'):
+        context['origin'] = request.session.get('search_origin')
+        context['destination'] = request.session.get('search_destination')
+        context['journey_date'] = request.session.get('journey_date')
+        context['seat_type'] = request.session.get('seat_type')
+    
+    return render(request, 'trains/home.html', context)
 
 
 def search_trains(request):
@@ -21,39 +33,68 @@ def search_trains(request):
         origin_code = request.POST.get('origin')
         destination_code = request.POST.get('destination')
         journey_date_str = request.POST.get('journey_date')
+        seat_type = request.POST.get('seat_type', '')
         
         # Store in session for deep search
         request.session['search_origin'] = origin_code
         request.session['search_destination'] = destination_code
         request.session['journey_date'] = journey_date_str
+        request.session['seat_type'] = seat_type
         request.session['deep_search_count'] = 0
         
         try:
             origin = Station.objects.get(station_code=origin_code)
             destination = Station.objects.get(station_code=destination_code)
             journey_date = datetime.strptime(journey_date_str, '%Y-%m-%d').date()
-        except:
-            messages.error(request, 'Invalid search parameters!')
-            return render(request, 'trains/home.html')
+            
+            # Validate date range
+            today = date.today()
+            max_date = today + timedelta(days=10)
+            
+            if journey_date < today:
+                messages.error(request, 'Journey date cannot be in the past!')
+                return redirect('trains:home')
+            
+            if journey_date > max_date:
+                messages.error(request, 'You can only book tickets up to 10 days in advance!')
+                return redirect('trains:home')
+                
+        except Station.DoesNotExist:
+            messages.error(request, 'Invalid station selected!')
+            return redirect('trains:home')
+        except ValueError:
+            messages.error(request, 'Invalid date format!')
+            return redirect('trains:home')
         
         # Find trains that have both stations in route
         trains_found = []
-        
-        # Get all trains
         all_trains = Train.objects.all()
         
         for train in all_trains:
-            # Check if train has both stations in correct order
             origin_route = Route.objects.filter(train=train, station=origin).first()
             dest_route = Route.objects.filter(train=train, station=destination).first()
             
             if origin_route and dest_route:
-                # Check sequence order
                 if origin_route.sequence_order < dest_route.sequence_order:
+                    # Filter by seat type if provided
+                    if seat_type and seat_type not in train.classes_available:
+                        continue
+                    
+                    # Calculate fare
+                    distance = float(dest_route.distance_from_origin - origin_route.distance_from_origin)
+                    base_fare = distance * 2
+                    reservation = 50
+                    tax = (base_fare + reservation) * 0.05
+                    total_fare = base_fare + reservation + tax
+
+                    
                     trains_found.append({
                         'train': train,
                         'origin_route': origin_route,
                         'dest_route': dest_route,
+                        'distance': distance,
+                        'base_fare': base_fare,
+                        'total_fare': round(total_fare, 2),
                     })
         
         context = {
@@ -61,7 +102,7 @@ def search_trains(request):
             'origin': origin,
             'destination': destination,
             'journey_date': journey_date,
-            'show_deep_search': len(trains_found) == 0,
+            'show_deep_search': True,
             'search_type': 'normal'
         }
         
@@ -89,25 +130,20 @@ def deep_search(request):
         messages.error(request, 'Invalid search data!')
         return render(request, 'trains/home.html')
     
-    # Find destination in any train route
     dest_routes = Route.objects.filter(station=destination)
     
     if not dest_routes.exists():
         messages.error(request, f'No route information available for {destination.station_name}')
         return render(request, 'trains/home.html')
     
-    # Get first train's route as reference
     dest_route = dest_routes.first()
     train_obj = dest_route.train
     
-    # Determine new destination based on deep search count
     if deep_count == 0:
-        # First deep search: X+1 (next station)
         new_sequence = dest_route.sequence_order + 1
         request.session['deep_search_count'] = 1
         search_direction = "next"
     elif deep_count == 1:
-        # Second deep search: X-1 (previous station)
         new_sequence = dest_route.sequence_order - 1
         request.session['deep_search_count'] = 2
         search_direction = "previous"
@@ -120,7 +156,6 @@ def deep_search(request):
             'show_deep_search': False
         })
     
-    # Find station with new sequence
     try:
         new_dest_route = Route.objects.get(
             train=train_obj,
@@ -136,7 +171,6 @@ def deep_search(request):
             'show_deep_search': False
         })
     
-    # Search trains to new destination
     trains_found = []
     all_trains = Train.objects.all()
     
@@ -146,22 +180,32 @@ def deep_search(request):
         
         if origin_route and dest_route_new:
             if origin_route.sequence_order < dest_route_new.sequence_order:
+                distance = float(dest_route_new.distance_from_origin - origin_route.distance_from_origin)
+                base_fare = distance * 2
+                reservation = 50
+                tax = (base_fare + reservation) * 0.05
+                total_fare = base_fare + reservation + tax
                 trains_found.append({
                     'train': train,
                     'origin_route': origin_route,
                     'dest_route': dest_route_new,
+                    'distance': distance,
+                    'base_fare': base_fare,
+                    'total_fare': round(total_fare, 2),
                 })
     
     context = {
+          
         'trains': trains_found,
         'origin': origin,
         'destination': new_destination,
         'original_destination': destination,
         'journey_date': journey_date,
-        'show_deep_search': deep_count < 2 and len(trains_found) == 0,
+        'show_deep_search': deep_count < 2,
         'search_type': 'deep',
         'deep_count': deep_count
     }
+
     
     return render(request, 'trains/search_results.html', context)
 

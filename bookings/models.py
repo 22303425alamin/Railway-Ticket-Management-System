@@ -26,6 +26,13 @@ class Payment(models.Model):
         ('cash', 'Cash'),
     )
     
+    BOOKING_STATUS_CHOICES = (
+        ('booked', 'Booked'),
+        ('travelled', 'Travelled'),
+        ('cancelled', 'Cancelled'),
+    )
+
+    
     # PNR = Primary booking identifier
     pnr = models.CharField(max_length=10, unique=True, default=generate_pnr, primary_key=True)
     
@@ -45,12 +52,15 @@ class Payment(models.Model):
     reservation_charge = models.DecimalField(max_digits=10, decimal_places=2, default=50)
     tax = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_fare = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
+    booking_status = models.CharField(max_length=20, choices=BOOKING_STATUS_CHOICES, default='booked')
+
     # Payment Details
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, blank=True, null=True)
     payment_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     transaction_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
     payment_date = models.DateTimeField(null=True, blank=True)
+    
+
     
     def __str__(self):
         return f"PNR: {self.pnr} - {self.user.username} - {self.train.train_name}"

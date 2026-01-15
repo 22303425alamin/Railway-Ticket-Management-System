@@ -5,7 +5,6 @@
 {% block content %}
 <div class="container">
     <div class="hero-section">
-        <!-- Search Form -->
         <div class="search-card">
             <h2>Search Trains</h2>
             <form method="POST" action="{% url 'trains:search' %}">
@@ -33,14 +32,17 @@
 
                 <div class="form-group">
                     <label for="journey_date">Date of Journey</label>
-                    <input type="date" name="journey_date" id="journey_date" required min="{{ today|date:'Y-m-d' }}">
+                    <input type="date" name="journey_date" id="journey_date" required min="{{ today|date:'Y-m-d' }}"
+                        max="{{ max_date|date:'Y-m-d' }}">
+
                 </div>
+
+
 
                 <button type="submit" class="btn btn-primary">SEARCH TRAINS</button>
             </form>
         </div>
 
-        <!-- Hero Image -->
         <div class="hero-image">
             <img src="https://play-lh.googleusercontent.com/MckUhHJQoAEGjagHkZjFjcgG62tj1K04dWy_KewZ6EoYc12DbTM7Qz3gHAPJNxJxIRwQ"
                 alt="Train Banner" width="100%" height="400" style="object-fit: cover;">
@@ -57,9 +59,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    // Set minimum date to today
-    document.getElementById('journey_date').min = new Date().toISOString().split('T')[0];
-</script>
 {% endblock %}

@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.db import transaction
 from .models import Payment
 from trains.models import Train, TrainSchedule, Station, Route
-from datetime import datetime
+from datetime import datetime, date
 import random
 import string
 
@@ -33,7 +33,11 @@ def new_booking(request, train_id):
         origin = Station.objects.get(station_code=origin_code)
         destination = Station.objects.get(station_code=destination_code)
         journey_date = datetime.strptime(journey_date_str, '%Y-%m-%d').date()
-        schedule = TrainSchedule.objects.get(train=train, journey_date=journey_date)
+        schedule = TrainSchedule.objects.get(train=train)
+        
+        if not schedule.is_running_on_date(journey_date):
+            messages.error(request, f'Train does not run on {journey_date.strftime("%A")}')
+            return redirect('trains:home')
         
         # Get route details for fare calculation
         origin_route = Route.objects.filter(train=train, station=origin).first()
@@ -44,7 +48,7 @@ def new_booking(request, train_id):
             return redirect('trains:home')
         
         # Calculate distance
-        distance = dest_route.distance_from_origin - origin_route.distance_from_origin
+        distance = float(dest_route.distance_from_origin - origin_route.distance_from_origin)
         
         # Calculate fare
         fare_per_km = 2
@@ -97,7 +101,11 @@ def confirm_booking(request):
         origin = Station.objects.get(station_code=origin_code)
         destination = Station.objects.get(station_code=destination_code)
         journey_date = datetime.strptime(journey_date_str, '%Y-%m-%d').date()
-        schedule = TrainSchedule.objects.get(train=train, journey_date=journey_date)
+        schedule = TrainSchedule.objects.get(train=train)
+        
+        if not schedule.is_running_on_date(journey_date):
+            messages.error(request, f'Train does not run on {journey_date.strftime("%A")}')
+            return redirect('trains:home')
         
         # Check seat availability
         if train.available_seats < 1:
@@ -109,7 +117,7 @@ def confirm_booking(request):
         dest_route = Route.objects.filter(train=train, station=destination).first()
         
         # Calculate distance
-        distance = dest_route.distance_from_origin - origin_route.distance_from_origin
+        distance = float(dest_route.distance_from_origin - origin_route.distance_from_origin)
         
         # Fare calculation: 2 BDT per KM
         fare_per_km = 2
@@ -142,13 +150,13 @@ def confirm_booking(request):
     train.book_seat(1)
     
     messages.success(request, f'Booking created! PNR: {payment.pnr}')
-    return redirect('bookings:payment', booking_id=payment.pnr)
+    return redirect('bookings:payment', pnr=payment.pnr)
 
 
 @login_required
-def payment(request, booking_id):
+def payment(request, pnr):
     """Payment Page - Simulated Payment Gateway"""
-    booking = get_object_or_404(Payment, pnr=booking_id, user=request.user)
+    booking = get_object_or_404(Payment, pnr=pnr, user=request.user)
     
     if booking.payment_status == 'success':
         messages.info(request, 'This booking is already paid!')
@@ -182,7 +190,8 @@ def my_bookings(request):
     bookings = Payment.objects.filter(user=request.user).order_by('-booking_date')
     
     context = {
-        'bookings': bookings
+        'bookings': bookings,
+        'today': date.today(),
     }
     
     return render(request, 'bookings/my_bookings.html', context)
@@ -195,6 +204,7 @@ def booking_detail(request, pnr):
     
     context = {
         'booking': booking,
+        'today': date.today(),
     }
     
     return render(request, 'bookings/booking_detail.html', context)
@@ -215,7 +225,7 @@ def download_ticket(request, pnr):
     
     if booking.payment_status != 'success':
         messages.error(request, 'Please complete payment first!')
-        return redirect('bookings:payment', booking_id=booking.pnr)
+        return redirect('bookings:payment', pnr=booking.pnr)
     
     context = {
         'booking': booking,

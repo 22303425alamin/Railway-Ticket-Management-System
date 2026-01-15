@@ -22,20 +22,26 @@
             </a>
 
             <ul class="navbar-menu">
-                <li><a href="{% url 'trains:home' %}"
-                        class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
-
                 {% if user.is_authenticated %}
+                {% if user.is_admin_user %}
+                <!-- Admin Menu -->
+                <li><a href="{% url 'accounts:admin_dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'trains:admin_train_list' %}">Manage Trains</a></li>
+                <li><a href="{% url 'trains:admin_route_list' %}">Manage Routes</a></li>
+                <li><a href="{% url 'trains:admin_schedule_list' %}">Manage Schedules</a></li>
+                <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+                {% else %}
+                <!-- User Menu -->
+                <li><a href="{% url 'trains:home' %}">Home</a></li>
                 <li><a href="{% url 'bookings:my_bookings' %}">My Bookings</a></li>
                 <li><a href="{% url 'accounts:profile' %}">{{ user.username }}</a></li>
                 <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+                {% endif %}
                 {% else %}
+                <li><a href="{% url 'trains:home' %}">Home</a></li>
                 <li><a href="{% url 'accounts:login' %}">Login</a></li>
                 <li><a href="{% url 'accounts:register' %}">Register</a></li>
                 {% endif %}
-
-                <li><a href="#">Train Information</a></li>
-                <li><a href="#">Contact Us</a></li>
             </ul>
         </div>
     </nav>

@@ -12,7 +12,8 @@ class PaymentAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Booking Information', {
-            'fields': ('pnr', 'user', 'train', 'route', 'train_schedule', 'journey_date', 'booking_date')
+         'fields': ('pnr', 'user', 'train', 'origin_station', 'destination_station', 'train_schedule', 'journey_date', 'booking_date')
+
         }),
         ('Fare Details', {
             'fields': ('base_fare', 'reservation_charge', 'tax', 'total_fare')

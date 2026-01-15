@@ -1,27 +1,39 @@
 {% extends 'base.html' %}
 
-{% block title %}Search Results - Bangladesh Railway{% endblock %}
+{% block title %}Search Results{% endblock %}
 
 {% block content %}
 <div class="container">
-
-    <!-- Search Info Header -->
     <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
         {% if search_type == 'deep' %}
-        <h2 style="color: #D97B3A;">🔍 Deep Search Results</h2>
-        <p style="color: #666;">Original destination: <strong>{{ original_destination.station_name }}</strong></p>
-        <p style="color: #2D7A5C;">Showing trains to: <strong>{{ destination.station_name }}</strong></p>
+        <h2 style="color: #D97B3A;">Deep Search Results</h2>
+        <p style="color: #666;">Original: <strong>{{ original_destination.station_name }}</strong> → Now showing:
+            <strong>{{ destination.station_name }}</strong>
+        </p>
         {% else %}
         <h2>Available Trains</h2>
         {% endif %}
-
-        <p style="margin-top: 1rem;">
-            <strong>{{ origin.station_name }}</strong> → <strong>{{ destination.station_name }}</strong>
-            on <strong>{{ journey_date|date:"d M, Y" }}</strong>
-        </p>
+        <p><strong>{{ origin.station_name }}</strong> → <strong>{{ destination.station_name }}</strong> on <strong>{{
+                journey_date|date:"d M, Y" }}</strong></p>
     </div>
 
-    <!-- Train List -->
+    <!-- Fixed Buttons on Right -->
+    <div
+        style="position: fixed; right: 2rem; top: 150px; display: flex; flex-direction: column; gap: 1rem; z-index: 100;">
+        <a href="{% url 'trains:home' %}?modify=1" class="btn"
+            style="background: #D97B3A; color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; text-decoration: none; text-align: center; width: 200px; font-weight: bold;">✏️
+            Modify Search</a>
+
+        {% if show_deep_search %}
+        <form method="POST" action="{% url 'trains:deep_search' %}" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" class="btn"
+                style="background: #D97B3A; color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; width: 200px; font-weight: bold; cursor: pointer;">🔍
+                Deep Search</button>
+        </form>
+        {% endif %}
+    </div>
+
     {% if trains %}
     <div class="train-list">
         {% for item in trains %}
@@ -29,70 +41,25 @@
             <div class="train-header">
                 <div>
                     <div class="train-name">{{ item.train.train_name }} ({{ item.train.train_number }})</div>
-                    <div class="train-users" style="color: #2D7A5C;">
-                        ✓ Available for booking
-                    </div>
+                    <div style="color: #2D7A5C;">✓ {{ item.train.available_seats }} seats available</div>
                 </div>
             </div>
-
-            <div class="train-route">
-                <div class="station-time">
-                    <div class="time">{{ item.origin_route.departure_time|time:"H:i" }}</div>
-                    <div class="station">{{ origin.station_name }}</div>
-                </div>
-
-                <div class="duration">
-                    <span style="color: #666;">────────</span>
-                </div>
-
-                <div class="station-time">
-                    <div class="time">{{ item.dest_route.arrival_time|time:"H:i" }}</div>
-                    <div class="station">{{ destination.station_name }}</div>
-                </div>
-            </div>
-
             <div style="margin: 1.5rem 0; padding: 1rem; background: #f9f9f9; border-radius: 8px;">
-                <p><strong>Classes Available:</strong> {{ item.train.classes_available }}</p>
-                <p><strong>Distance:</strong> {{ item.dest_route.distance_from_origin|floatformat:0 }} km</p>
-                {% widthratio item.dest_route.distance_from_origin 1 2 as fare %}
-                <p><strong>Base Fare:</strong> ৳{{ fare }} per passenger (৳2 per km)</p>
+                <p><strong>Distance:</strong> {{ item.distance|floatformat:0 }} km</p>
+                <p><strong>Base Fare:</strong> ৳{{ item.base_fare|floatformat:0 }}</p>
+                <p style="font-size: 1.25rem; color: #D97B3A;"><strong>Total:</strong> ৳{{ item.total_fare }}</p>
             </div>
-
             <div style="text-align: center;">
-                {% if user.is_authenticated %}
                 <a href="{% url 'bookings:new_booking' item.train.id %}" class="btn btn-success">BOOK NOW</a>
-                {% else %}
-                <a href="{% url 'accounts:login' %}" class="btn btn-outline">Login to Book</a>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <!-- No Trains Found -->
     <div style="text-align: center; padding: 3rem; background: white; border-radius: 10px;">
         <h3 style="color: #D97B3A;">No Trains Found</h3>
-        <p style="color: #666; margin: 1rem 0;">No direct trains available for your search criteria.</p>
-
-        {% if show_deep_search %}
-        <div class="deep-search-section">
-            <p style="margin-bottom: 1rem; color: #666;">
-                Try <strong>Deep Search</strong> to find trains to nearby stations
-            </p>
-            <form method="POST" action="{% url 'trains:deep_search' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn-deep-search">
-                    🔍 Try Deep Search
-                </button>
-            </form>
-        </div>
-        {% endif %}
     </div>
     {% endif %}
 
-    <!-- Back Button -->
-    <div style="text-align: center; margin-top: 2rem;">
-        <a href="{% url 'trains:home' %}" class="btn btn-outline">← Back to Search</a>
-    </div>
 </div>
 {% endblock %}

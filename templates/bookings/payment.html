@@ -50,7 +50,8 @@
                 </div>
             </div>
 
-            <form method="POST" action="{% url 'bookings:payment' booking.id %}" id="paymentForm">
+            <form method="POST" action="" id="paymentForm">
+
                 {% csrf_token %}
 
                 <div class="form-group">
