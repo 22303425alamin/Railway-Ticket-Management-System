@@ -1,14 +1,4 @@
-/* Bangladesh Railway Style - Inspired Design */
-
-:root {
-    --primary-orange: #D97B3A;
-    --secondary-green: #A8C5B8;
-    --dark-green: #2D7A5C;
-    --light-bg: #F5F5F5;
-    --white: #FFFFFF;
-    --text-dark: #333333;
-    --border-color: #E0E0E0;
-}
+/* Modern Railway System - Mint Theme */
 
 * {
     margin: 0;
@@ -18,90 +8,98 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--light-bg);
-    color: var(--text-dark);
-    line-height: 1.6;
+    background: #e8f5f1;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
 }
 
 /* Navbar */
 .navbar {
-    background-color: var(--white);
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .navbar-container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 2rem;
 }
 
 .navbar-brand {
     display: flex;
     align-items: center;
+    gap: 0.75rem;
     text-decoration: none;
-    gap: 1rem;
+    color: #2D7A5C;
 }
 
 .navbar-logo {
-    width: 50px;
-    height: 50px;
+    font-size: 2rem;
 }
 
 .navbar-title {
-    font-size: 1.5rem;
     font-weight: bold;
-    color: var(--primary-orange);
+    font-size: 1.1rem;
+    line-height: 1.2;
 }
 
 .navbar-menu {
     display: flex;
-    gap: 2rem;
     list-style: none;
+    gap: 2rem;
+    align-items: center;
 }
 
-.navbar-menu a {
+.navbar-menu li a {
     text-decoration: none;
-    color: var(--text-dark);
+    color: #333;
     font-weight: 500;
-    transition: color 0.3s;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
-.navbar-menu a:hover,
-.navbar-menu a.active {
-    color: var(--primary-orange);
-    border-bottom: 2px solid var(--primary-orange);
-}
-
-/* Container */
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
+.navbar-menu li a:hover {
+    background: #2D7A5C;
+    color: white;
 }
 
 /* Hero Section */
 .hero-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    margin-top: 2rem;
+    gap: 2rem;
+    margin: 2rem 0;
 }
 
+/* Cards */
 .search-card {
-    background: var(--white);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .search-card h2 {
+    color: #2D7A5C;
     margin-bottom: 1.5rem;
-    color: var(--text-dark);
+    font-size: 1.8rem;
+    font-weight: 700;
 }
 
+/* Form Elements */
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -109,246 +107,186 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-dark);
+    color: #555;
+    font-weight: 600;
+    font-size: 0.95rem;
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
+    padding: 0.9rem 1.2rem;
+    border: 2px solid #E0E0E0;
+    border-radius: 10px;
     font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
     outline: none;
-    border-color: var(--primary-orange);
+    border-color: #4db8a8;
+    box-shadow: 0 0 0 3px rgba(77, 184, 168, 0.1);
 }
 
 /* Buttons */
 .btn {
-    padding: 0.75rem 2rem;
+    padding: 1.1rem 2.5rem;
     border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
 }
 
-.btn-primary {
-    background-color: var(--secondary-green);
-    color: var(--white);
-    width: 100%;
-    font-weight: 600;
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-.btn-primary:hover {
-    background-color: var(--dark-green);
+.btn-primary,
+.btn-success,
+.btn-secondary {
+    background: #4db8a8;
+    color: white;
 }
 
-.btn-success {
-    background-color: var(--dark-green);
-    color: var(--white);
-    font-weight: 600;
-}
-
-.btn-success:hover {
-    background-color: #245a46;
+.btn-primary:hover,
+.btn-success:hover,
+.btn-secondary:hover {
+    background: #3a9688;
 }
 
 .btn-outline {
-    background-color: transparent;
-    border: 2px solid var(--primary-orange);
-    color: var(--primary-orange);
+    background: white;
+    color: #4db8a8;
+    border: 2px solid #4db8a8;
 }
 
 .btn-outline:hover {
-    background-color: var(--primary-orange);
-    color: var(--white);
-}
-
-/* Hero Image */
-.hero-image {
-    position: relative;
-}
-
-.hero-image img {
-    width: 100%;
-    border-radius: 10px;
-}
-
-.payment-methods {
-    margin-top: 1rem;
-    text-align: center;
-}
-
-.payment-methods p {
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-.payment-icons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.payment-icons img {
-    height: 30px;
+    background: #4db8a8;
+    color: white;
 }
 
 /* Train Cards */
-.train-list {
-    margin-top: 2rem;
+.train-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid #4db8a8;
 }
 
-.train-card {
-    background: var(--white);
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
+.train-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .train-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .train-name {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: var(--primary-orange);
-}
-
-.train-users {
-    color: var(--dark-green);
-    font-size: 0.9rem;
-}
-
-.train-route {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.station-time {
-    text-align: center;
-}
-
-.station-time .time {
-    font-size: 1.1rem;
-    font-weight: bold;
-}
-
-.station-time .station {
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.duration {
-    color: #666;
-}
-
-.seat-classes {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-}
-
-.seat-class {
-    border: 2px solid var(--border-color);
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.seat-class.available {
-    border-color: var(--dark-green);
-    background-color: #f0f9f6;
-}
-
-.seat-class-name {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.seat-price {
-    font-size: 1.25rem;
-    color: var(--primary-orange);
-    font-weight: bold;
-}
-
-.seat-availability {
-    font-size: 0.85rem;
-    color: #666;
-    margin: 0.5rem 0;
-}
-
-.seat-count {
     font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--dark-green);
+    font-weight: 700;
+    color: #2D7A5C;
 }
 
-/* Deep Search Button */
-.deep-search-section {
-    text-align: center;
-    margin: 2rem 0;
-    padding: 2rem;
-    background: var(--white);
-    border-radius: 10px;
-}
-
-.btn-deep-search {
-    background: linear-gradient(135deg, var(--primary-orange), #e69055);
-    color: white;
-    padding: 1rem 3rem;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-.btn-deep-search:hover {
-    transform: scale(1.05);
-}
-
-/* Alert Messages */
+/* Alerts */
 .alert {
-    padding: 1rem;
-    border-radius: 5px;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
     margin-bottom: 1rem;
-}
-
-.alert-warning {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-}
-
-.alert-info {
-    background-color: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
+    font-weight: 500;
 }
 
 .alert-success {
-    background-color: #d4edda;
+    background: #d4edda;
     color: #155724;
-    border: 1px solid #c3e6cb;
+    border-left: 4px solid #28a745;
+}
+
+.alert-error,
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+table thead tr {
+    background: #2D7A5C;
+    color: white;
+}
+
+table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+}
+
+table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+table td {
+    padding: 1rem;
+}
+
+/* Hero Image */
+.hero-image {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.payment-methods {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 2rem;
+    color: white;
+}
+
+.payment-icons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 /* Responsive */
@@ -356,14 +294,11 @@ body {
     .hero-section {
         grid-template-columns: 1fr;
     }
+}
 
-    .navbar-menu {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .train-route {
-        flex-direction: column;
-        gap: 1rem;
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
     }
 }

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if train %}Edit{% else %}Add{% endif %} Train{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 600px; margin: 2rem auto;">
+        <div class="search-card">
+            <h2 style="color: #D97B3A; margin-bottom: 2rem;">{% if train %}Edit{% else %}Add New{% endif %} Train</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Train Number</label>
+                    <input type="text" name="train_number" value="{{ train.train_number }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Train Name</label>
+                    <input type="text" name="train_name" value="{{ train.train_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Seats</label>
+                    <input type="number" name="total_seats" value="{{ train.total_seats|default:100 }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Coaches</label>
+                    <input type="number" name="total_coaches" value="{{ train.total_coaches|default:10 }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Classes Available</label>
+                    <input type="text" name="classes_available" value="{{ train.classes_available }}"
+                        placeholder="AC,Non-AC,Sleeper" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Off Day</label>
+                    <input type="text" name="off_day" value="{{ train.off_day }}" placeholder="Sunday,Monday">
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Save Train</button>
+                    <a href="{% url 'trains:admin_train_list' %}" class="btn btn-outline"
+                        style="flex: 1; text-align: center; text-decoration: none;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

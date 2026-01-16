@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Route{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="max-width: 600px; margin: 2rem auto;">
+        <div class="search-card">
+            <h2 style="color: #D97B3A; margin-bottom: 2rem;">Add New Route</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Train *</label>
+                    <select name="train" required>
+                        <option value="">Select Train</option>
+                        {% for train in trains %}
+                        <option value="{{ train.id }}">{{ train.train_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Station *</label>
+                    <select name="station" required>
+                        <option value="">Select Station</option>
+                        {% for station in stations %}
+                        <option value="{{ station.id }}">{{ station.station_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Sequence Order *</label>
+                    <input type="number" name="sequence_order" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Distance from Origin (km) *</label>
+                    <input type="number" step="0.01" name="distance_from_origin" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Departure Time *</label>
+                    <input type="time" name="departure_time" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Arrival Time</label>
+                    <input type="time" name="arrival_time">
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Add Route</button>
+                    <a href="{% url 'trains:admin_route_list' %}" class="btn btn-outline"
+                        style="flex: 1; text-align: center; text-decoration: none;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
